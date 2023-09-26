@@ -6,7 +6,7 @@ public class NodeELWrapper extends ELWrapper {
 
     private String nodeId;
 
-    private String tag;
+//    private String tag;
 
     public NodeELWrapper(String nodeId) {
         this.nodeId = nodeId;
@@ -21,11 +21,6 @@ public class NodeELWrapper extends ELWrapper {
         return (NodeELWrapper) this.getFirstWrapper();
     }
 
-    public NodeELWrapper tag(String tag) {
-        this.setTag(tag);
-        return this;
-    }
-
     protected String getNodeId() {
         return nodeId;
     }
@@ -34,19 +29,35 @@ public class NodeELWrapper extends ELWrapper {
         this.nodeId = nodeId;
     }
 
-    protected String getTag() {
-        return tag;
+    @Override
+    public NodeELWrapper tag(String tag) {
+        this.setTag(tag);
+        return this;
     }
 
-    protected void setTag(String tag) {
-        this.tag = tag;
+    @Override
+    public NodeELWrapper id(String id) {
+        this.setId(id);
+        return this;
     }
 
     @Override
     public String toEL() {
         NodeELWrapper nodeELWrapper = this.getNodeWrapper();
         StringBuilder sb = new StringBuilder();
-        sb.append(StrUtil.format("{}", nodeELWrapper.getNodeId()));
+        sb.append(StrUtil.format("node(\"{}\")", nodeELWrapper.getNodeId()));
+        if (StrUtil.isNotBlank(nodeELWrapper.getTag())){
+            sb.append(StrUtil.format(".tag(\"{}\")", nodeELWrapper.getTag()));
+        }
+        return sb.toString();
+    }
+
+    @Override
+    protected String toEL(int depth) {
+        NodeELWrapper nodeELWrapper = this.getNodeWrapper();
+        StringBuilder sb = new StringBuilder();
+        sb.append(StrUtil.repeat(ELBus.TAB, depth));
+        sb.append(StrUtil.format("node(\"{}\")", nodeELWrapper.getNodeId()));
         if (StrUtil.isNotBlank(nodeELWrapper.getTag())){
             sb.append(StrUtil.format(".tag(\"{}\")", nodeELWrapper.getTag()));
         }
